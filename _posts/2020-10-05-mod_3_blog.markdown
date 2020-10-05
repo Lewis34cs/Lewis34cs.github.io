@@ -1,0 +1,9 @@
+---
+layout: post
+title:      "Mod 3 Blog"
+date:       2020-10-05 17:56:20 +0000
+permalink:  mod_3_blog
+---
+
+
+In this blog i'll be writing about pipelines probably. They're definitely useful when it comes to spitting out base models, but can be very tricky to access certain parts. The skeleton of a pipeline for one model is fairly simple. Let's say we have a vanilla random forest model. This type of model will require two transformers for preprocessing. One will be a categorical transformer, and the other will be a numerical transformer. The categorical transformer will be targeting the (obviously) categorical data, and depending on your dataset, you will want to specify the appropriate classes to have within this transformer. 
