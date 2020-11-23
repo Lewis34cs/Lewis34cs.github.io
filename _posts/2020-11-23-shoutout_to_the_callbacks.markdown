@@ -61,7 +61,7 @@ def three_callbacks(monitor='val_loss', min_delta=0, patience=0, mode='auto',
 									 cooldown=0):
   """
   Definition:
-  Creates two variables, and then returns these variables in a list.
+  Creates three variables, and then returns these variables in a list.
 
   1. variable 'earlystop' stops model training when the 'monitor' metric has not 
   improved past the 'min_delta' threshold after a certain amount of epochs, 
@@ -69,6 +69,8 @@ def three_callbacks(monitor='val_loss', min_delta=0, patience=0, mode='auto',
 
   2. variable 'checkpoint' saves model at some interval, so the model can be 
   loaded later on to continue the training from the saved state.
+	
+	3. variable 'reducelr' reduces learning rate after a certain number of intervals.
 
   Args:
   monitor: default = 'val_loss'. Quantity to be monitored during training.
@@ -79,7 +81,7 @@ def three_callbacks(monitor='val_loss', min_delta=0, patience=0, mode='auto',
   mode: default = 'auto'. Defines the direction of monitor quantity. ex. If 'min', 
   training will stop after monitored quantity is no longer decreasing past the 
   defined min_delta. 
-  f_path: default = '/content/drive/My Drive/gdrive/models/pneumonia_models/'. 
+  f_path: default = '../drive/models/'.  
   The filepath that will be created / set as the destination for saved models 
   from 'checkpoint' variable.
   restore_best_weights: default = False. Defines whether or not to restore the 
@@ -87,7 +89,7 @@ def three_callbacks(monitor='val_loss', min_delta=0, patience=0, mode='auto',
   save_best_only: default = False. If save_best_only=True, the latest best model 
   according to the quantity monitored will not be overwritten.
   save_freq: default = 'epoch'. The defined interval at which the model is saved.
-	lr_patience: default = 5. Dictates how long the ReduceLROnPlateau callback must 
+  lr_patience: default = 5. Dictates how long the ReduceLROnPlateau callback must 
 	wait until it can initiate learning rate decay if there is no improvement in the monitored
 	metric.
 	factor: default = 0.1. Float that is multipled by the current learning rate. This action is 
