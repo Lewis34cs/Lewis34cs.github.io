@@ -1,9 +1,105 @@
 ---
 layout: post
-title:      "Mod 3 Blog"
-date:       2020-10-05 17:56:20 +0000
+title:      "The Complex Simplicity of Pipelines"
+date:       2020-10-05 13:56:21 -0400
 permalink:  mod_3_blog
 ---
 
+Pipelines are common in machine learning systems, and help with speeding up and simplifying some preprocessing situations. They are also useful when it comes to spitting out base models and comparing them to see which may give a better result for a particular metric/metrics, but it can also be tricky to access certain parts of a pipeline. The skeleton of a pipeline for one model is fairly simple. 
 
-In this blog i'll be writing about pipelines probably. They're definitely useful when it comes to spitting out base models, but can be very tricky to access certain parts. The skeleton of a pipeline for one model is fairly simple. Let's say we have a vanilla random forest model. This type of model will require two transformers for preprocessing. One will be a categorical transformer, and the other will be a numerical transformer. The categorical transformer will be targeting the (obviously) categorical data, and depending on your dataset, you will want to specify the appropriate classes to have within this transformer. 
+## Our Dataset:
+
+Imagine we are working with a dataset that consists of numerical and categorical data, and we are trying to classify whether or not a person has a cardiovascular disease. The numerical data includes things like: age, height, weight, systolic pressure, diastolic pressure, BMI (eg. 23.5), glucose levels, cholesterol levels, and pulse pressure. The categorical data includes: gender (male or female), whether or not they smoke, if they are active, if they drink alcohol, Blood Pressure categories, and BMI categories (underweight, normal, overweight, obese).
+
+Now that we've figured out what columns are numerical and categorical, we can begin to build a pipeline for all of our baseline models. 
+
+## Pipeline Architecture
+
+`from sklearn.pipeline import Pipeline`
+
+The pipeline parameter we will focus on today will be **steps**. This parameter takes in a list of tuples, with the first item of each tuple being a name, and the next item being the transformer. The order of the tuples in the list is important, because they will be chained together, with the first tuple implementing fit/transform on the passed in data first. 
+
+Let's say we want construct baseline decision tree, random forest, and XGBoost models for our dataset. These type of models will require two different pipelines for preprocessing. One will be a **categorical transformer**, and the other will be a **numerical transformer**. The categorical transformer will be preprocessing the (obviously) categorical data, and the numerical transformer will be preprocessing the numerical data. 
+
+So let's set up our pipelines:
+
+```
+#Numerical Pipeline
+num_transformer = Pipeline(steps=[
+                ('imputer', SimpleImputer(strategy='median'))
+                #('scale', StandardScaler())
+								])
+#Note that our models that we have chosen do not need to be scaled, because they are robust against 
+#unscaled data and potential skewing. Keep in mind that for other models, you may want to scale your 
+#numerical data.
+								
+#Categorical Pipeline
+cat_transformer = Pipeline(steps=[
+                ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+                ('encoder', OneHotEncoder(handle_unknown='ignore', sparse=False))
+								])
+```
+
+As we can see above, our num_transformer is a pipeline that contains a list of steps specific to how we want to preprocess our numerical data. Our first step uses SimpleImputer() which imputes any null values in our numerical column, and replaces those null values with the median of that column. The second step applies StandardScaler(), which scales our numerical data to all be within a similar range to help prevent any skewness when determining the weights for each of the numerical columns. 
+
+Our cat_transformer is a pipeline that contains a list of steps specific to how we want to preprocess our categorical data. Similar to our numerical pipeline, our first step in our categorical pipeline will use the SimpleImputer() to fill any null values in our categorical columns with 'missing'. The next step OneHotEncodes the cat columns. We also don't want a sparse matrix, so we tell our OneHotEncoder sparse=False. Handle_unknown is set to 'ignore' so our Encoder doesn't raise an error if it encounters an unknown category. Instead it will make the entire category all zeros and keep on encoding. 
+
+Now we will put these into our **ColumnTransformer** that will preprocess our data for us...
+
+WAIT!! What's a ColumnTransformer you ask? Well, here's a quick definition from sklearn:
+
+```
+from sklearn.compose import ColumnTransformer
+```
+
+"This estimator allows different columns or column subsets of the input to be transformed separately and the features generated by each transformer will be concatenated to form a single feature space. This is useful for heterogeneous or columnar data, to combine several feature extraction mechanisms or transformations into a single transformer."
+
+```
+#List of column names for numeric and categorical data in our dataset
+num_cols = ['age', 'weight', 'height', 'systolic', 'diastolic', 'bmi', 'pulse_pressure', 'gluc', 'cholesterol']
+cat_cols = ['gender', 'smoke', 'alco', 'active', 'bp_cat', 'bmi_cat']
+
+#ColumnTransformer 
+preprocess = ColumnTransformer(transformers=[
+                        ('num', num_transformer, num_cols), 
+                        ('cat', cat_transformer, cat_cols)
+												])
+```
+
+Note that we must pass in a list of our column names into each of the transformers within our ColumnTransformer. For example, our numerical column names are in a list called 'num_cols' and that list goes into the first step, and the same thing with our categorical columns and transformer. The ColumnTransformer takes in a name, the actual transformer, and a list of column names.
+
+Now that we've defined the order for our numerical and categorical preprocessing and have placed them along with the column names for each transformer within our ColumnTransformer, we can then move on to the next step.
+
+We will now make a list of tuples, with the first item in each tuple being the name of our model, and then the model iteself:
+
+```
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+import xgboost as xgb
+
+models = [('tree',DecisionTreeClassifier),
+                          ('rf',RandomForestClassifier),
+                          ('xgb',xgb.XGBClassifier)
+					               ]
+```
+
+Now for the more complex part. We will run a for loop through each item in our models list and attach our ColumnTransformer to each of the baseline models. We create an empty dictionary that will have a key of the model name, and store the pipeline for the model within that key's value.
+
+```
+multi_pipes = {}
+for name, model in models:
+    multi_pipes[name] = Pipeline(steps=[('preprocesser', preprocess), 
+                                                                              (name, model())
+																																							])
+
+#This code below allows us to actually view each model's pipeline
+with sklearn.config_context(display='diagram'):
+    for pipe in multi_pipes:
+        display(multi_pipes[pipe])
+```
+
+From there we could even create a function that would fit each model within our multi_pipes dictionary on our X_train and y_train, and evaluate each model within our pipeline system to find the one with the best results! 
+
+Thanks for taking the time to read this, and if you have any further questions please feel free to reach out.
+
+
