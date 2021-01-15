@@ -12,4 +12,8 @@ Spectrograms are immensely useful tools that we can use to help dissect informat
 
 The cool part about these images is that we can actually use them to potentially help with classification of things like: diagnosing heart diseases through heart beat audio, identifying certain infections/diseases through cough audio, the ability to detect and differentiate between sounds and categorize them into groups, etc.
 
-So what exactly 
+## Different types of Spectrograms
+
+
+
+So how exactly can we create spectrograms from audio?
