@@ -128,7 +128,17 @@ plt.show()
 
 ### Creating the Mel-Spectrogram
 
-
+```
+mel_signal = librosa.feature.melspectrogram(y=signal, sr=sr, hop_length=hop_length, 
+                                              n_fft=n_fft)
+spectrogram = np.abs(mel_signal)
+power_to_db = librosa.power_to_db(spectrogram, ref=ref)
+plt.figure(figsize=figsize)
+ldp.specshow(power_to_db, sr=sr, x_axis='time', y_axis='mel', cmap=cmap, 
+              hop_length=hop_length)
+plt.colorbar(label='dB')
+plt.show()
+```
 
 
 
