@@ -36,6 +36,8 @@ plt.ylabel('Amplitude', fontdict=dict(size=12))
 plt.show()
 ```
 
+<insert pic here>
+
 Using the above code we can see our audio file in its waveform. We can even use another library called IPython.display to hear the audio with only one line of code!
 
 ```
@@ -129,6 +131,8 @@ plt.show()
 ```
 
 ### Creating the Mel-Spectrogram
+
+
 
 ```
 mel_signal = librosa.feature.melspectrogram(y=signal, sr=sr, hop_length=hop_length, 
