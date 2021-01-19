@@ -17,28 +17,29 @@ So how exactly can we create spectrograms from audio? First we will import the t
 
 ```
 import librosa, librosa.display
+import IPython.display as ipd
 import numpy as np
 import matplotlib.pyplot as plt
-% matplotlib inline
+%matplotlib inline
 
-signal, sample_rate = librosa.load('/audio_folder/audio_file1.mp3', sr=22050)
+signal, sr = librosa.load(librosa.util.example('brahms'))
 ```
 
 When we use librosa.load() to load an audio file, we need to specify two variables to take in the signal of the audio and the sample rate. The signal is a 1-dimensional numpy array that contains a number of values that is equal to the sample rate multiplied by the duration of the audio file. Each of these values in the signal is the amplitude of the audio file at a certain point in time. The sample rate (sr) by default is 22050, which means that for every second there are 22,050 samples. To view our loaded in audio, we can use librosa.display.waveplot().
 
 ```
-plt.figure(figsize=(10, 8))
-librosa.display.waveplot(signal, sr=sample_rate)
-plt.title('Waveplot')
-plt.xlabel('Time')
-plt.ylabel('Amplitude')
+plt.figure(figsize=(6, 4))
+librosa.display.waveplot(signal, sr=sr)
+plt.title('Waveplot', fontdict=dict(size=15))
+plt.xlabel('Time', fontdict=dict(size=12))
+plt.ylabel('Amplitude', fontdict=dict(size=12))
 plt.show()
 ```
 
 Using the above code we can see our audio file in its waveform. We can even use another library called IPython.display to hear the audio with only one line of code!
 
 ```
-ipd.Audio(signal, rate=sample_rate)
+ipd.Audio(signal, rate=sr)
 ```
 
 ### Fast Fourier Transformation
@@ -118,7 +119,8 @@ log_spectro = librosa.amplitude_to_db(spectrogram)
 plt.figure(figsize=(8, 7))
 
 # Using librosa.display.specshow() function to create our spectrogram
-librosa.display.specshow(log_spectro, sr=sr, x_axis='time', y_axis='hz', hop_length=hop_length)
+librosa.display.specshow(log_spectro, sr=sr, x_axis='time', y_axis='hz', 
+                         hop_length=hop_length, cmap='magma')
 plt.colorbar(label='Decibels')
 plt.title('Spectrogram (dB)')
 plt.xlabel('Time')
@@ -132,9 +134,9 @@ plt.show()
 mel_signal = librosa.feature.melspectrogram(y=signal, sr=sr, hop_length=hop_length, 
                                               n_fft=n_fft)
 spectrogram = np.abs(mel_signal)
-power_to_db = librosa.power_to_db(spectrogram, ref=ref)
-plt.figure(figsize=figsize)
-ldp.specshow(power_to_db, sr=sr, x_axis='time', y_axis='mel', cmap=cmap, 
+power_to_db = librosa.power_to_db(spectrogram, ref=np.max)
+plt.figure(figsize=(8, 7))
+librosa.display.specshow(power_to_db, sr=sr, x_axis='time', y_axis='mel', cmap='magma', 
               hop_length=hop_length)
 plt.colorbar(label='dB')
 plt.show()
