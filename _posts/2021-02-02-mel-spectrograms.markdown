@@ -1,13 +1,13 @@
 ---
 layout: post
 title:      "Mel-Spectrograms"
-date:       2021-02-02 20:37:53 +0000
+date:       2021-02-02 15:37:54 -0500
 permalink:  mel-spectrograms
 ---
 
 Spectrograms are immensely useful tools that we can use to help dissect information from audio files and process into images. In a spectrogram, the horizontal axis represents time, the vertical axis represents frequency, and the color intensity represents the amplitude of a frequency at a certain point in time. In case you can't quite picture that, here is an example of what a spectrogram looks like: 
 
-<insert https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSpectrogram&psig=AOvVaw2BmD0x3ZWyDgl7lbeEYaKs&ust=1610822204358000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKDDur3Knu4CFQAAAAAdAAAAABAD>
+<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Spectrogram-19thC.png/600px-Spectrogram-19thC.png' alt='Spectrogram Image'>
 
 The cool part about these images is that we can actually use them to potentially help with classification of things like: diagnosing heart diseases through heart beat audio, identifying certain infections/diseases through coughing audio, detecting and differentiating between sounds and classifying them into groups, etc.
 
